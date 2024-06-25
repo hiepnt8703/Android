@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "590803491448",
+    "project_id": "coffee-280d3",
+    "storage_bucket": "coffee-280d3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590803491448:android:88f62ca1b9acaf46d9ab8d",
+        "android_client_info": {
+          "package_name": "tlu.cse.ht63.coffeeshop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKWSjWy8SukV_dVS_xlTEFrHi-zRlM5QQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590803491448:android:c97ee761621b6929d9ab8d",
+        "android_client_info": {
+          "package_name": "tlu.cse.ht63.cuoiky"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKWSjWy8SukV_dVS_xlTEFrHi-zRlM5QQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
