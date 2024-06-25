@@ -1,3 +1,83 @@
 <resources>
-    <string name="app_name">Cuoiky</string>
+    <string name="app_name">Coffe Application</string>
+    <string name="news_menu">Новости</string>
+    <string name="menu_menu">Меню</string>
+    <string name="geo_menu">Карта</string>
+    <string name="user_menu">Кабинет</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="phone">Телефон</string>
+    <string name="password">Пароль</string>
+    <string name="forget_pass">Забыли пароль?</string>
+    <string name="sign_in_with">Войти с помощью</string>
+    <string name="vkontakte">Вконтакте</string>
+    <string name="google">Google</string>
+    <string name="pass_recovery">Восстановление пароля</string>
+    <string name="code_from_message">Код из сообщения</string>
+    <string name="code">Код</string>
+    <string name="pass_confirm">Подтверждение пароля</string>
+    <string name="recovery">Восстановить</string>
+    <string name="addresses">Наши адреса</string>
+    <string name="season_menu">Сезонное</string>
+    <string name="liked_menu">Избранное</string>
+    <string name="classic_menu">Стандарт</string>
+    <string name="baked_menu">Выпечка</string>
+    <string name="menu">Menu</string>
+    <string name="news">Новости</string>
+    <string name="person">Личный кабинет</string>
+    <string name="person_name_and_firstname">Name Firstname</string>
+    <string name="person_phone_number">+7 (999) 999-99-99</string>
+    <string name="loyalty_program">Программа лояльности</string>
+    <string name="orders_history">История заказов</string>
+    <string name="exit">Выйти</string>
+    <string name="order_number_text">Заказ №</string>
+    <string name="num_order">0000001</string>
+    <string name="product">Товар</string>
+    <string name="cost">Цена</string>
+    <string name="list_product">Капучино\nЛатте\nКруасан</string>
+    <string name="list_cost">200p\n180p\n59p</string>
+    <string name="final_cost">Общая стоимость</string>
+    <string name="num_final_cost">439p</string>
+    <string name="name_product">Капучино</string>
+    <string name="cost_name_product">100p</string>
+    <string name="add_in_cart">Добавить в корзину</string>
+    <string name="add_in_liked">Добавить в избранное</string>
+    <string name="name_menu_elem">Name Menu Element</string>
+    <string name="choose_syrup">Выберите сироп</string>
+    <string name="back">Назад</string>
+    <string name="description">Описание</string>
+    <string name="name_news">Новости</string>
+    <string name="date_news">date</string>
+    <string name="information_of_loyalty">Программа лояльности — система поощрения
+        постоянных покупателей: за приверженность компании
+        клиенты получают скидки и бонусы. </string>
+    <string name="close">Закрыть</string>
+    <string name="registration">Регистрация</string>
+    <string name="name">Имя</string>
+    <string name="firstname">Фамилия</string>
+    <string name="date_birthday">Дата рождения</string>
+    <string name="final_reg">Зарегистрироваться</string>
+    <string name="menu_elem_counter">1</string>
+    <string name="news_description">Описание новости</string>
+    <string name="news_header">Заголовок новости</string>
+    <string name="final_int_cost">0p</string>
+    <string name="pay">Оплатить</string>
+    <string name="cart">Корзина</string>
+    <string name="syrop">Сироп:</string>
+    <string name="cost_with_dvoetochie">Стоимость:</string>
+    <string name="final_cart_cost">21313p</string>
+    <string name="witpout_syrop">Без сиропа</string>
+    <string name="Email">Почта</string>
+
+
+    <string-array name="syrups_list">
+        <item>Без сиропа</item>
+        <item>Ванильный</item>
+        <item>Карамельный</item>
+        <item>Шоколадный</item>
+        <item>Ореховый</item>
+        <item>Фисташковый</item>
+        <item>Соленая карамель</item>
+    </string-array>
 </resources>
