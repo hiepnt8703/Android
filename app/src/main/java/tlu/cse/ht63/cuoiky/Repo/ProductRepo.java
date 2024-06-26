@@ -38,4 +38,25 @@ public class ProductRepo {
                 })
                 .addOnFailureListener(executor, e -> callback.onError(e));
     }
+
+    public interface ProductCallback {
+        void onProductLoaded(Product product);
+    }
+
+    public void getProductById(String productId, final ProductCallback callback) {
+        db.collection("products").document(productId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Product product = document.toObject(Product.class);
+                    callback.onProductLoaded(product);
+                } else {
+                    callback.onProductLoaded(null);
+                }
+            } else {
+                callback.onProductLoaded(null);
+            }
+        });
+    }
+
 }

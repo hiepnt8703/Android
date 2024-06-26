@@ -1,64 +1,100 @@
 package tlu.cse.ht63.cuoiky;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link OrdersFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+import tlu.cse.ht63.cuoiky.Adapter.CartAdapter;
+import tlu.cse.ht63.cuoiky.Model.Cart;
+import tlu.cse.ht63.cuoiky.Model.Product;
+import tlu.cse.ht63.cuoiky.R;
+import tlu.cse.ht63.cuoiky.Repo.ProductRepo;
+
 public class OrdersFragment extends Fragment {
+    private RecyclerView cartRec;
+    private TextView resultSum;
+    private List<Cart> cartList;
+    private CartAdapter cartAdapter;
+    private ProductRepo productRepo;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public OrdersFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment OrdersFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static OrdersFragment newInstance(String param1, String param2) {
-        OrdersFragment fragment = new OrdersFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_orders, container, false);
+
+        cartRec = view.findViewById(R.id.cartRec);
+        resultSum = view.findViewById(R.id.resultSum);
+
+        cartList = new ArrayList<>();
+        cartAdapter = new CartAdapter(getContext(), cartList);
+        cartRec.setLayoutManager(new LinearLayoutManager(getContext()));
+        cartRec.setAdapter(cartAdapter);
+
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        productRepo = new ProductRepo();
+
+        loadCartItems();
+
+        return view;
+    }
+
+    private void loadCartItems() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            CollectionReference cartItemsRef = db.collection("users").document(userId).collection("cartItems");
+
+            cartItemsRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot != null) {
+                        getActivity().runOnUiThread(() -> {
+                            cartList.clear();
+                            AtomicReference<Double> totalSum = new AtomicReference<>(0.0);
+
+                            for (DocumentSnapshot document : querySnapshot) {
+                                Cart cartItem = document.toObject(Cart.class);
+                                cartItem.setProductId(document.getId());
+                                cartList.add(cartItem);
+
+                                productRepo.getProductById(cartItem.getProductId(), product -> {
+                                    if (product != null) {
+                                        totalSum.updateAndGet(v -> v + cartItem.getQuantity() * product.getPrice());
+                                        resultSum.setText(String.format("Total: $ %.2f", totalSum.get()));
+                                        cartAdapter.notifyDataSetChanged();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                } else {
+                    Log.e("OrdersFragment", "Error getting cart items", task.getException());
+                }
+            });
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_orders, container, false);
     }
 }
