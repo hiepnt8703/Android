@@ -50,6 +50,8 @@ public class OrdersFragment extends Fragment {
 
         cartList = new ArrayList<>();
         cartAdapter = new CartAdapter(getContext(), cartList);
+        cartAdapter.setOnCartChangeListener(this::updateTotalSum); // Thiết lập listener
+
         cartRec.setLayoutManager(new LinearLayoutManager(getContext()));
         cartRec.setAdapter(cartAdapter);
 
@@ -93,6 +95,19 @@ public class OrdersFragment extends Fragment {
                     }
                 } else {
                     Log.e("OrdersFragment", "Error getting cart items", task.getException());
+                }
+            });
+        }
+    }
+
+    // Phương thức cập nhật tổng số tiền
+    private void updateTotalSum() {
+        AtomicReference<Double> totalSum = new AtomicReference<>(0.0);
+        for (Cart cartItem : cartList) {
+            productRepo.getProductById(cartItem.getProductId(), product -> {
+                if (product != null) {
+                    totalSum.updateAndGet(v -> v + cartItem.getQuantity() * product.getPrice());
+                    getActivity().runOnUiThread(() -> resultSum.setText(String.format("Total: $ %.2f", totalSum.get())));
                 }
             });
         }
