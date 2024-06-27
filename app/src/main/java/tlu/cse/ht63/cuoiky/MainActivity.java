@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = new CartFragment();
                 } else if (item.getItemId() == R.id.nav_user) {
                     selectedFragment = new UserFragment();
+                } else if (item.getItemId() == R.id.nav_order) {
+                    selectedFragment = new OrderFragment();
                 }
 
                 if (selectedFragment != null) {
