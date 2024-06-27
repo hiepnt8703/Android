@@ -55,6 +55,11 @@ public class UserFragment extends Fragment {
 
         btnChangePassword.setOnClickListener(v -> {
             // Code to change password
+
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new ChangePasswordFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         btnLogout.setOnClickListener(v -> {

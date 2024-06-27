@@ -106,7 +106,7 @@ public class EditProfileFragment extends Fragment {
                     editTextAddress.setText(userInfo.getAddress());
                 }
             } else {
-                Toast.makeText(getContext(), "Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(getContext(), "Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(e -> {
             Toast.makeText(getContext(), "Lỗi khi tải thông tin: " + e.getMessage(), Toast.LENGTH_SHORT).show();
