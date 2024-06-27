@@ -13,7 +13,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import tlu.cse.ht63.cuoiky.Model.Cart;
@@ -147,6 +149,36 @@ public class CartRepo {
                 listener.onComplete(taskCompletionSource.getTask());
             } else {
                 TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+                taskCompletionSource.setException(task.getException());
+                listener.onComplete(taskCompletionSource.getTask());
+            }
+        });
+    }
+
+    public void getCartItems(final OnCompleteListener<List<Cart>> listener) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.d("CartRepo", "Người dùng chưa đăng nhập.");
+            return;
+        }
+
+        String userId = currentUser.getUid();
+        CollectionReference cartItemsRef = usersCollection.document(userId).collection(CART_ITEMS_COLLECTION);
+
+        cartItemsRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Cart> cartItems = new ArrayList<>();
+                for (DocumentSnapshot document : task.getResult()) {
+                    Cart cartItem = document.toObject(Cart.class);
+                    cartItems.add(cartItem);
+                }
+                TaskCompletionSource<List<Cart>> taskCompletionSource = new TaskCompletionSource<>();
+                taskCompletionSource.setResult(cartItems);
+                listener.onComplete(taskCompletionSource.getTask());
+            } else {
+                TaskCompletionSource<List<Cart>> taskCompletionSource = new TaskCompletionSource<>();
                 taskCompletionSource.setException(task.getException());
                 listener.onComplete(taskCompletionSource.getTask());
             }

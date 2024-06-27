@@ -14,6 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -28,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import tlu.cse.ht63.cuoiky.Adapter.CartAdapter;
 import tlu.cse.ht63.cuoiky.Model.Cart;
 import tlu.cse.ht63.cuoiky.Repo.CartRepo;
+import tlu.cse.ht63.cuoiky.Repo.OrderRepo;
 import tlu.cse.ht63.cuoiky.Repo.ProductRepo;
 
 public class CartFragment extends Fragment {
@@ -136,20 +140,73 @@ public class CartFragment extends Fragment {
 
 
     private void proceedToPayment() {
-        // Xóa tất cả các mục trong giỏ hàng
-        cartRepo.deleteCartItems(task -> {
+        cartRepo.getCartItems(task -> {
             if (task.isSuccessful()) {
-                Log.d("OrdersFragment", "Cart items deleted successfully.");
-                resultSum.setText("Total: $0.00");
-                cartList.clear();
-                cartAdapter.notifyDataSetChanged();
-                // Code để tiếp tục với thanh toán
-                Log.d("OrdersFragment", "Proceeding to payment...");
+                List<Cart> cartItems = task.getResult();
+                calculateTotalAmount(cartItems).addOnCompleteListener(amountTask -> {
+                    if (amountTask.isSuccessful()) {
+                        double totalAmount = amountTask.getResult();
+
+                        // Extract sum from resultSum
+                        String resultSumText = resultSum.getText().toString();
+                       // double sum = Double.parseDouble(resultSumText.replace("Total: $", "").trim());
+
+                        OrderRepo orderRepo = new OrderRepo();
+                        orderRepo.addOrder(cartItems, totalAmount, new OrderRepo.AddOrderCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d("OrdersFragment", "Order added successfully.");
+                                cartRepo.deleteCartItems(cartDeleteTask -> {
+                                    if (cartDeleteTask.isSuccessful()) {
+                                        Log.d("OrdersFragment", "Cart items deleted successfully.");
+                                        resultSum.setText("Total: $0.00");
+                                        cartList.clear();
+                                        cartAdapter.notifyDataSetChanged();
+                                        Log.d("OrdersFragment", "Proceeding to payment...");
+                                    } else {
+                                        Log.e("OrdersFragment", "Error deleting cart items", cartDeleteTask.getException());
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Log.e("OrdersFragment", "Error adding order.", e);
+                            }
+                        });
+                    } else {
+                        Log.e("OrdersFragment", "Error calculating total amount", amountTask.getException());
+                    }
+                });
             } else {
-                Log.e("OrdersFragment", "Error deleting cart items", task.getException());
+                Log.e("OrdersFragment", "Error getting cart items", task.getException());
             }
         });
     }
+
+
+    private Task<Double> calculateTotalAmount(List<Cart> cartItems) {
+        TaskCompletionSource<Double> tcs = new TaskCompletionSource<>();
+        final AtomicReference<Double> totalAmount = new AtomicReference<>(0.0);
+        final int[] processedItems = {0};
+
+        for (Cart cart : cartItems) {
+            productRepo.getProductById(cart.getProductId(), product -> {
+                if (product != null) {
+                    totalAmount.updateAndGet(v -> v + product.getPrice() * cart.getQuantity());
+                }
+
+                processedItems[0]++;
+                if (processedItems[0] == cartItems.size()) {
+                    tcs.setResult(totalAmount.get());
+                }
+            });
+        }
+
+        return tcs.getTask();
+    }
+
+
 
     private void updateTotalSum() {
         AtomicReference<Double> totalSum = new AtomicReference<>(0.0);
