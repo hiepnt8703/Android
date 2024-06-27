@@ -51,6 +51,10 @@ public class UserFragment extends Fragment {
 
         btnContact.setOnClickListener(v -> {
             // Code to contact
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new ContactFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         btnChangePassword.setOnClickListener(v -> {
