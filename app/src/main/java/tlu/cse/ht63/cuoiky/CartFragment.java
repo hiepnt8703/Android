@@ -143,7 +143,7 @@ public class CartFragment extends Fragment {
                 resultSum.setText("Total: $0.00");
                 cartList.clear();
                 cartAdapter.notifyDataSetChanged();
-                // Code để tiếp tục với thanh toán  
+                // Code để tiếp tục với thanh toán
                 Log.d("OrdersFragment", "Proceeding to payment...");
             } else {
                 Log.e("OrdersFragment", "Error deleting cart items", task.getException());
