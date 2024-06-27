@@ -15,9 +15,11 @@
         android:theme="@style/Theme.Cuoiky"
         tools:targetApi="31">
         <activity
+            android:name=".AddActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="false" />
-
         <activity
             android:name=".UserFragment"
             android:exported="false" />
