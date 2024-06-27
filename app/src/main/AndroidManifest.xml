@@ -18,7 +18,7 @@
             android:name=".UserFragment"
             android:exported="false" />
         <activity
-            android:name=".OrdersFragment"
+            android:name=".CartFragment"
             android:exported="false" />
         <activity
             android:name=".SignUp"

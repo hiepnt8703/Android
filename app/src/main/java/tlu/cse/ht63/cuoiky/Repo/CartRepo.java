@@ -2,6 +2,9 @@ package tlu.cse.ht63.cuoiky.Repo;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -120,5 +123,33 @@ public class CartRepo {
         cartItemDocRef.delete()
                 .addOnSuccessListener(aVoid -> Log.d("CartRepo", "Cart item removed."))
                 .addOnFailureListener(e -> Log.d("CartRepo", "Error removing cart item: ", e));
+    }
+
+    public void deleteCartItems(OnCompleteListener<Void> listener) {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            Log.d("CartRepo", "Người dùng chưa đăng nhập.");
+            return;
+        }
+
+        String userId = currentUser.getUid();
+        CollectionReference cartItemsRef = usersCollection.document(userId).collection(CART_ITEMS_COLLECTION);
+
+        cartItemsRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (DocumentSnapshot document : task.getResult()) {
+                    document.getReference().delete();
+                }
+                TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+                taskCompletionSource.setResult(null);
+                listener.onComplete(taskCompletionSource.getTask());
+            } else {
+                TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+                taskCompletionSource.setException(task.getException());
+                listener.onComplete(taskCompletionSource.getTask());
+            }
+        });
     }
 }

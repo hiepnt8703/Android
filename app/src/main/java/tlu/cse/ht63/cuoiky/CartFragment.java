@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,16 +27,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import tlu.cse.ht63.cuoiky.Adapter.CartAdapter;
 import tlu.cse.ht63.cuoiky.Model.Cart;
-import tlu.cse.ht63.cuoiky.Model.Product;
-import tlu.cse.ht63.cuoiky.R;
+import tlu.cse.ht63.cuoiky.Repo.CartRepo;
 import tlu.cse.ht63.cuoiky.Repo.ProductRepo;
 
-public class OrdersFragment extends Fragment {
+public class CartFragment extends Fragment {
     private RecyclerView cartRec;
     private TextView resultSum;
+    private Button payBtn;
     private List<Cart> cartList;
     private CartAdapter cartAdapter;
     private ProductRepo productRepo;
+    private CartRepo cartRepo;
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -43,14 +45,15 @@ public class OrdersFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_orders, container, false);
+        View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
         cartRec = view.findViewById(R.id.cartRec);
         resultSum = view.findViewById(R.id.resultSum);
+        payBtn = view.findViewById(R.id.payBtn);
 
         cartList = new ArrayList<>();
         cartAdapter = new CartAdapter(getContext(), cartList);
-        cartAdapter.setOnCartChangeListener(this::updateTotalSum); // Thiết lập listener
+        cartAdapter.setOnCartChangeListener(this::updateTotalSum);
 
         cartRec.setLayoutManager(new LinearLayoutManager(getContext()));
         cartRec.setAdapter(cartAdapter);
@@ -58,8 +61,11 @@ public class OrdersFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         productRepo = new ProductRepo();
+        cartRepo = new CartRepo();
 
         loadCartItems();
+
+        payBtn.setOnClickListener(v -> checkUserInfoAndProceed());
 
         return view;
     }
@@ -80,16 +86,18 @@ public class OrdersFragment extends Fragment {
 
                             for (DocumentSnapshot document : querySnapshot) {
                                 Cart cartItem = document.toObject(Cart.class);
-                                cartItem.setProductId(document.getId());
-                                cartList.add(cartItem);
+                                if (cartItem != null) {
+                                    cartItem.setProductId(document.getId());
+                                    cartList.add(cartItem);
 
-                                productRepo.getProductById(cartItem.getProductId(), product -> {
-                                    if (product != null) {
-                                        totalSum.updateAndGet(v -> v + cartItem.getQuantity() * product.getPrice());
-                                        resultSum.setText(String.format("Total: $ %.2f", totalSum.get()));
-                                        cartAdapter.notifyDataSetChanged();
-                                    }
-                                });
+                                    productRepo.getProductById(cartItem.getProductId(), product -> {
+                                        if (product != null) {
+                                            totalSum.updateAndGet(v -> v + cartItem.getQuantity() * product.getPrice());
+                                            resultSum.setText(String.format("Total: $ %.2f", totalSum.get()));
+                                            cartAdapter.notifyDataSetChanged();
+                                        }
+                                    });
+                                }
                             }
                         });
                     }
@@ -100,7 +108,49 @@ public class OrdersFragment extends Fragment {
         }
     }
 
-    // Phương thức cập nhật tổng số tiền
+    private void checkUserInfoAndProceed() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            CollectionReference infoRef = db.collection("users").document(userId).collection("information");
+
+            infoRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                        // Proceed to payment if collection "information" exists and is not empty
+                        proceedToPayment();
+                    } else {
+                        // Navigate to EditProfileFragment if collection "information" does not exist or is empty
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, new EditProfileFragment())
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                } else {
+                    Log.e("OrdersFragment", "Error checking user information", task.getException());
+                }
+            });
+        }
+    }
+
+
+    private void proceedToPayment() {
+        // Xóa tất cả các mục trong giỏ hàng
+        cartRepo.deleteCartItems(task -> {
+            if (task.isSuccessful()) {
+                Log.d("OrdersFragment", "Cart items deleted successfully.");
+                resultSum.setText("Total: $0.00");
+                cartList.clear();
+                cartAdapter.notifyDataSetChanged();
+                // Code để tiếp tục với thanh toán  
+                Log.d("OrdersFragment", "Proceeding to payment...");
+            } else {
+                Log.e("OrdersFragment", "Error deleting cart items", task.getException());
+            }
+        });
+    }
+
     private void updateTotalSum() {
         AtomicReference<Double> totalSum = new AtomicReference<>(0.0);
         for (Cart cartItem : cartList) {
