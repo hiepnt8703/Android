@@ -42,7 +42,6 @@ public class ProductRepo {
     public interface ProductCallback {
         void onProductLoaded(Product product);
     }
-
     public void getProductById(String productId, final ProductCallback callback) {
         db.collection("products").document(productId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -59,4 +58,5 @@ public class ProductRepo {
         });
     }
 
+    
 }

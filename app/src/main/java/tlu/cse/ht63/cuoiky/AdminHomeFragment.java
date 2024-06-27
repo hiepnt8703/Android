@@ -72,7 +72,7 @@ public class AdminHomeFragment extends Fragment {
         FloatingActionButton fabAdd = rootView.findViewById(R.id.fab_add);
         fabAdd.setOnClickListener(v -> {
             // Start new activity
-            Intent intent = new Intent(getActivity(), AddActivity.class);
+            Intent intent = new Intent(getActivity(), AddProductActivity.class);
             startActivity(intent);
         });
 
