@@ -37,6 +37,7 @@ public class HomeFragment extends Fragment {
 
         searchBar = view.findViewById(R.id.search_bar);
         headerImage = view.findViewById(R.id.header_image);
+        //
         productList = view.findViewById(R.id.product_list);
         productAdapter = new ProductAdapter(requireContext(), products);
         productList.setLayoutManager(new GridLayoutManager(requireContext(), 2)); // 2 columns
