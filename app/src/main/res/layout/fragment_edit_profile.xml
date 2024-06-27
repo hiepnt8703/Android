@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Toolbar with back button -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:title="Chỉnh sửa thông tin">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="Back"
+            android:layout_gravity="start"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Edit Text: Name -->
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tên"
+        android:padding="16dp"
+        android:inputType="text"
+        android:maxLines="1" />
+
+    <!-- Edit Text: Phone Number -->
+    <EditText
+        android:id="@+id/editTextPhone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Số điện thoại"
+        android:padding="16dp"
+        android:inputType="phone"
+        android:maxLines="1" />
+
+    <!-- Edit Text: Address -->
+    <EditText
+        android:id="@+id/editTextAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Địa chỉ"
+        android:padding="16dp"
+        android:inputType="text"
+        android:maxLines="1" />
+
+    <!-- Button: Save Changes -->
+    <Button
+        android:id="@+id/btnSaveChanges"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lưu thay đổi"
+        android:padding="16dp" />
+
+</LinearLayout>
