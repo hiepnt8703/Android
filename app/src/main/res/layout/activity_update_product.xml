@@ -10,8 +10,8 @@
         android:id="@+id/text_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Thêm sản phẩm"
+        android:layout_marginTop="60dp"
+        android:text="Chỉnh sửa sản phẩm"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/image_product"
+        android:id="@+id/edit_image_product"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="16dp"
@@ -30,13 +30,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_title" />
 
-
+    <!-- EditText for Product Description -->
     <EditText
-        android:id="@+id/add_product_name"
+        android:id="@+id/edit_product_url"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/rounded"
+        android:hint="Nhập URL sản phẩm"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.842"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_image_product" />
+
+    <EditText
+        android:id="@+id/edit_product_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/rounded"
         android:hint="Nhập tên sản phẩm"
@@ -45,60 +61,52 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.842"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_product" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_product_url" />
 
     <EditText
-        android:id="@+id/add_product_description"
+        android:id="@+id/edit_product_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/rounded"
         android:hint="Nhập mô tả sản phẩm"
+        app:layout_constraintTop_toBottomOf="@id/edit_product_name"
+        android:background="@drawable/rounded"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.526"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_product_name" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="16dp"/>
 
+    <!-- EditText for Product Price -->
     <EditText
-        android:id="@+id/add_product_price"
+        android:id="@+id/edit_product_price"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/rounded"
-        android:hint="Nhập giá sản phẩm"
         android:inputType="numberDecimal"
+        android:hint="Nhập giá sản phẩm"
+        app:layout_constraintTop_toBottomOf="@id/edit_product_description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/rounded"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.526"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_product_description" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="16dp"/>
 
+    <!-- RatingBar for Product Rating -->
+
+    <!-- Button to Add Product -->
     <Button
-        android:id="@+id/button_add_product"
+        android:id="@+id/button_edit_product"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:text="Thêm mới"
+        android:layout_marginTop="24dp"
+        android:text="Cập nhật"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.721"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_product_price" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_product_price" />
 
-    <Button
-        android:id="@+id/btnback"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:text="Trở về"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.306"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_product_price" />
 </androidx.constraintlayout.widget.ConstraintLayout>

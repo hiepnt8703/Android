@@ -58,5 +58,15 @@ public class ProductRepo {
         });
     }
 
-    
+    public interface AddProductCallback {
+        void onSuccess(String productId);
+        void onError(Exception e);
+    }
+
+    public void addProduct(Product product, AddProductCallback callback) {
+        CollectionReference productsRef = db.collection(COLLECTION_NAME);
+        productsRef.add(product)
+                .addOnSuccessListener(documentReference -> callback.onSuccess(documentReference.getId()))
+                .addOnFailureListener(e -> callback.onError(e));
+    }
 }
