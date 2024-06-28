@@ -87,7 +87,6 @@ public class ProductRepo {
         });
     }
 
-
     public interface AddProductCallback {
         void onSuccess(String productId);
 
@@ -98,6 +97,29 @@ public class ProductRepo {
         CollectionReference productsRef = db.collection(COLLECTION_NAME);
         productsRef.add(product)
                 .addOnSuccessListener(documentReference -> callback.onSuccess(documentReference.getId()))
+                .addOnFailureListener(e -> callback.onError(e));
+    }
+
+    public interface DeleteProductCallback {
+        void onSuccess();
+        void onError(Exception e);
+    }
+
+    public void deleteProductById(String productId, DeleteProductCallback callback) {
+        db.collection(COLLECTION_NAME).document(productId)
+                .delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e));
+    }
+
+    public interface UpdateProductCallback {
+        void onSuccess();
+        void onError(Exception e);
+    }
+    public void updateProductById(String productId, Product updatedProduct, UpdateProductCallback callback) {
+        db.collection(COLLECTION_NAME).document(productId)
+                .set(updatedProduct)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
                 .addOnFailureListener(e -> callback.onError(e));
     }
 }

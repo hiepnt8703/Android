@@ -37,6 +37,7 @@ import tlu.cse.ht63.cuoiky.AdminHomeFragment;
 import tlu.cse.ht63.cuoiky.MainActivity;
 import tlu.cse.ht63.cuoiky.Model.Product;
 import tlu.cse.ht63.cuoiky.R;
+import tlu.cse.ht63.cuoiky.Repo.ProductRepo;
 
 public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.ViewHolder> {
     private List<Product> productList;
@@ -47,7 +48,6 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
         this.context = context;
         this.productList = productList;
     }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -68,7 +68,7 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
             public void onClick(View v) {
                 final DialogPlus dialogPlus = DialogPlus.newDialog(holder.imageView.getContext())
                         .setContentHolder(new com.orhanobut.dialogplus.ViewHolder(R.layout.activity_update_product))
-                        .setExpanded(true,2100)
+                        .setExpanded(true, 2100)
                         .create();
 
                 View view = dialogPlus.getHolderView();
@@ -78,6 +78,7 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
                 EditText price = view.findViewById(R.id.edit_product_price);
 
                 Button btnUpdate = view.findViewById(R.id.button_edit_product);
+
                 name.setText(product.getName());
                 description.setText(product.getDescription());
                 price.setText(String.valueOf(product.getPrice()));
@@ -89,45 +90,84 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
                 btnUpdate.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("name", name.getText().toString());
-                        map.put("description", description.getText().toString());
-                        map.put("price", Double.parseDouble(price.getText().toString()));
+                        // Create a new Product object with updated values
+                        Product updatedProduct = new Product(
+                                product.getId(),
+                                name.getText().toString(),
+                                description.getText().toString(),
+                                Double.parseDouble(price.getText().toString()),
+                                product.getImage(), // Assuming the image URL doesn't change
+                                product.getRating() // Keep the original rating
+                        );
 
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("products").document(product.getId())
-                                .update(map)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(context, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-                                        if (dialogPlus != null && dialogPlus.isShowing()) {
-                                            dialogPlus.dismiss();
-                                        }
-                                        // Replace fragment
-                                        FragmentActivity activity = (FragmentActivity) context;
-                                        FragmentManager fragmentManager = activity.getSupportFragmentManager();
-                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                        fragmentTransaction.replace(R.id.nav_admin, new AdminFragment()); // Assuming R.id.nav_host_fragment is your fragment container
-                                        fragmentTransaction.commit();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(context, "Cập nhật thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                        ProductRepo productRepo = new ProductRepo();
+                        productRepo.updateProductById(product.getId(), updatedProduct, new ProductRepo.UpdateProductCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(context, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                                if (dialogPlus != null && dialogPlus.isShowing()) {
+                                    dialogPlus.dismiss();
+                                }
+                                FragmentActivity activity = (FragmentActivity) context;
+                                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.replace(R.id.nav_admin, new AdminFragment());
+                                fragmentTransaction.commit();
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Toast.makeText(context, "Cập nhật thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
-
             }
         });
 
         holder.btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Are you sure?");
+                builder.setMessage("Delete cannot be undone!");
 
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ProductRepo productRepo = new ProductRepo();
+                        productRepo.deleteProductById(product.getId(), new ProductRepo.DeleteProductCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(context, "Product deleted successfully", Toast.LENGTH_SHORT).show();
+                                productList.remove(holder.getAdapterPosition());
+                                notifyDataSetChanged();
+
+                                // Load AdminHomeFragment after deletion
+                                FragmentActivity activity = (FragmentActivity) context;
+                                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.replace(R.id.nav_admin, new AdminHomeFragment());
+                                fragmentTransaction.commit();
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Toast.makeText(context, "Failed to delete product: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
     }
@@ -156,8 +196,7 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
 
         public void bind(Product product) {
             textProductName.setText(product.getName());
-            textProductPrice.setText(String.valueOf(product.getPrice())); // Sử dụng giá trị giá của sản phẩm (nếu có)
-            // Để đặt hình ảnh sản phẩm: imageView.setImageResource(product.getImageResId()); (nếu có)
+            textProductPrice.setText(String.valueOf(product.getPrice()));
             Glide.with(context).load(product.getImage()).into(imageView);
         }
     }

@@ -19,6 +19,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.UUID;
 
 import tlu.cse.ht63.cuoiky.Model.Product;
+import tlu.cse.ht63.cuoiky.Repo.ProductRepo;
 
 public class AddProductActivity extends AppCompatActivity {
 
@@ -94,7 +95,6 @@ public class AddProductActivity extends AppCompatActivity {
             String imageId = UUID.randomUUID().toString();
             StorageReference imageRef = storageReference.child("images/" + imageId);
 
-            // Upload image to Firebase Storage
             imageRef.putFile(imageUri)
                     .addOnSuccessListener(taskSnapshot -> {
                         // Image uploaded successfully, now get the download URL
@@ -112,18 +112,22 @@ public class AddProductActivity extends AppCompatActivity {
                                 Product product = new Product(null, productName, productDescription, productPrice, imageUrl, 0);
 
                                 // Add product to Firestore
-                                db.collection("products")
-                                        .add(product)
-                                        .addOnSuccessListener(documentReference -> {
-                                            Intent intent = new Intent(AddProductActivity.this, AdminFragment.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            startActivity(intent);
-                                            Toast.makeText(AddProductActivity.this, "Thêm sản phẩm thành công", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Toast.makeText(AddProductActivity.this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                        });
+                                ProductRepo productRepo = new ProductRepo();
+                                productRepo.addProduct(product, new ProductRepo.AddProductCallback() {
+                                    @Override
+                                    public void onSuccess(String productId) {
+                                        Intent intent = new Intent(AddProductActivity.this, AdminFragment.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        Toast.makeText(AddProductActivity.this, "Thêm sản phẩm thành công", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+                                        Toast.makeText(AddProductActivity.this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             } else {
                                 Toast.makeText(AddProductActivity.this, "Vui lòng nhập đầy đủ thông tin sản phẩm", Toast.LENGTH_SHORT).show();
                             }
