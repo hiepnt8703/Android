@@ -59,6 +59,7 @@ public class AddProductActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 uploadProduct();
+
             }
         });
 
@@ -108,13 +109,15 @@ public class AddProductActivity extends AppCompatActivity {
 
                             if (!productName.isEmpty() && !productDescription.isEmpty() && !productPriceStr.isEmpty()) {
                                 double productPrice = Double.parseDouble(productPriceStr);
-
                                 Product product = new Product(null, productName, productDescription, productPrice, imageUrl, 0);
 
                                 // Add product to Firestore
                                 db.collection("products")
                                         .add(product)
                                         .addOnSuccessListener(documentReference -> {
+                                            Intent intent = new Intent(AddProductActivity.this, AdminFragment.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(intent);
                                             Toast.makeText(AddProductActivity.this, "Thêm sản phẩm thành công", Toast.LENGTH_SHORT).show();
                                             finish();
                                         })
