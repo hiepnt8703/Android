@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,6 +110,14 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
                                 if (dialogPlus != null && dialogPlus.isShowing()) {
                                     dialogPlus.dismiss();
                                 }
+
+                                productList.set(holder.getAdapterPosition(), updatedProduct);
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        notifyDataSetChanged();
+                                    }
+                                });
                                 FragmentActivity activity = (FragmentActivity) context;
                                 FragmentManager fragmentManager = activity.getSupportFragmentManager();
                                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -143,7 +153,6 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
                                 productList.remove(holder.getAdapterPosition());
                                 notifyDataSetChanged();
 
-                                // Load AdminHomeFragment after deletion
                                 FragmentActivity activity = (FragmentActivity) context;
                                 FragmentManager fragmentManager = activity.getSupportFragmentManager();
                                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

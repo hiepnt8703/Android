@@ -111,12 +111,11 @@ public class AddProductActivity extends AppCompatActivity {
                                 double productPrice = Double.parseDouble(productPriceStr);
                                 Product product = new Product(null, productName, productDescription, productPrice, imageUrl, 0);
 
-                                // Add product to Firestore
                                 ProductRepo productRepo = new ProductRepo();
                                 productRepo.addProduct(product, new ProductRepo.AddProductCallback() {
                                     @Override
                                     public void onSuccess(String productId) {
-                                        Intent intent = new Intent(AddProductActivity.this, AdminFragment.class);
+                                        Intent intent = new Intent(AddProductActivity.this, AdminHomeFragment.class);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
                                         Toast.makeText(AddProductActivity.this, "Thêm sản phẩm thành công", Toast.LENGTH_SHORT).show();

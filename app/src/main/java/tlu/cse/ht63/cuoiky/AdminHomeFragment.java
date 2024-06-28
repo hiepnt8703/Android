@@ -36,7 +36,6 @@ public class AdminHomeFragment extends Fragment {
         productRepo = new ProductRepo();
         productList = new ArrayList<>();
         adapter = new AdminHomeAdapter(productList, getContext());
-        // Load products from Firestore
         loadProducts();
     }
 
