@@ -13,6 +13,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,6 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import tlu.cse.ht63.cuoiky.Adapter.CartAdapter;
 import tlu.cse.ht63.cuoiky.Model.Cart;
+import tlu.cse.ht63.cuoiky.Model.Order;
 import tlu.cse.ht63.cuoiky.Repo.CartRepo;
 import tlu.cse.ht63.cuoiky.Repo.OrderRepo;
 import tlu.cse.ht63.cuoiky.Repo.ProductRepo;
@@ -160,7 +163,7 @@ public class CartFragment extends Fragment {
                         OrderRepo orderRepo = new OrderRepo();
                         orderRepo.addOrder(cartItems, totalAmount, new OrderRepo.AddOrderCallback() {
                             @Override
-                            public void onSuccess() {
+                            public void onSuccess(Order order) {
                                 Log.d("OrdersFragment", "Order added successfully.");
                                 cartRepo.deleteCartItems(cartDeleteTask -> {
                                     if (cartDeleteTask.isSuccessful()) {
@@ -173,6 +176,15 @@ public class CartFragment extends Fragment {
                                         Log.e("OrdersFragment", "Error deleting cart items", cartDeleteTask.getException());
                                     }
                                 });
+                                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                                OrderTrackingFragment orderTrackingFragment = new OrderTrackingFragment();
+                                Bundle args = new Bundle();
+                                args.putSerializable("order", order); // Correct usage of putSerializable
+                                orderTrackingFragment.setArguments(args);
+                                fragmentManager.beginTransaction()
+                                        .replace(R.id.fragment_container, orderTrackingFragment)
+                                        .addToBackStack(null)
+                                        .commit();
                             }
 
                             @Override

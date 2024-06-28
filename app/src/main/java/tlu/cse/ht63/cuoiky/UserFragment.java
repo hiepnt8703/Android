@@ -47,6 +47,10 @@ public class UserFragment extends Fragment {
 
         btnFeedback.setOnClickListener(v -> {
             // Code to provide feedback
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new FeedBackFragment())
+                    .addToBackStack(null)
+                    .commit();
         });
 
         btnContact.setOnClickListener(v -> {

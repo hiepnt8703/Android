@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.fragment_container, new HomeFragment())
                     .commit();
         }
-        // Check user role to show admin menu item if necessary
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
@@ -79,19 +79,19 @@ public class MainActivity extends AppCompatActivity {
                         if (document.exists()) {
                             String role = document.getString("role");
                             if ("Admin".equals(role)) {
-                                // Show admin menu item
+
                                 BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
                                 bottomNavigationView.getMenu().findItem(R.id.nav_admin).setVisible(true);
                             } else {
-                                // Hide admin menu item
+
                                 BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
                                 bottomNavigationView.getMenu().findItem(R.id.nav_admin).setVisible(false);
                             }
                         } else {
-                            // Handle the case where document does not exist
+
                         }
                     } else {
-                        // Handle errors
+
                     }
                 });
     }
