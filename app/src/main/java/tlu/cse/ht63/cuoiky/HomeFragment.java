@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment {
         productRepo = new ProductRepo();
         fetchProducts();
 
-        // Xử lý sự kiện khi người dùng nhập vào search bar
+
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -73,7 +73,6 @@ public class HomeFragment extends Fragment {
             public void onSuccess(List<Product> productList) {
                 products.clear();
                 products.addAll(productList);
-                // Khi mới load sản phẩm, hiển thị tất cả
                 showAllProducts();
             }
 
@@ -85,14 +84,11 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // Phương thức lọc sản phẩm dựa trên từ khóa
     private void filterProducts(String keyword) {
         if (filteredList == null) {
-            filteredList = new ArrayList<>(products); // Khởi tạo filteredList ban đầu từ products
+            filteredList = new ArrayList<>(products);
         }
-
         if (keyword.isEmpty()) {
-            // Nếu từ khóa trống, hiển thị tất cả sản phẩm
             showAllProducts();
         } else {
             List<Product> tempFilteredList = new ArrayList<>();

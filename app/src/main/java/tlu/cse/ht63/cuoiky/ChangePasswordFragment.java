@@ -49,10 +49,7 @@ public class ChangePasswordFragment extends Fragment {
         btnChangePassword = view.findViewById(R.id.btnChangePassword);
         btnBack = view.findViewById(R.id.btnBack);
 
-        // Set click listener for btnChangePassword
         btnChangePassword.setOnClickListener(v -> changePassword());
-
-        // Set click listener for btnBack
         btnBack.setOnClickListener(v -> getActivity().onBackPressed());
     }
 
@@ -61,7 +58,7 @@ public class ChangePasswordFragment extends Fragment {
         String newPassword = editTextNewPassword.getText().toString().trim();
         String confirmPassword = editTextConfirmPassword.getText().toString().trim();
 
-        // Validate input fields
+
         if (TextUtils.isEmpty(currentPassword)) {
             editTextCurrentPassword.setError("Vui lòng nhập mật khẩu hiện tại");
             return;
@@ -82,12 +79,11 @@ public class ChangePasswordFragment extends Fragment {
             return;
         }
 
-        // Get the current user and re-authenticate
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), currentPassword);
 
-            // Re-authenticate user
             user.reauthenticate(credential)
                     .addOnSuccessListener(aVoid -> {
                         // Update password

@@ -22,7 +22,7 @@ import tlu.cse.ht63.cuoiky.Repo.ProductRepo;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
 
-    // Thêm interface để thông báo thay đổi giỏ hàng
+
     public interface OnCartChangeListener {
         void onCartChanged();
     }
@@ -33,7 +33,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         this.onCartChangeListener = listener;
     }
 
-    // Các thành viên khác
+
     private Context context;
     private List<Cart> cartList;
     private CartRepo cartRepo;
@@ -71,7 +71,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             cartRepo.updateCartItemQuantity(cart.getProductId(), cart.getQuantity() + 1);
             cart.setQuantity(cart.getQuantity() + 1);
             notifyItemChanged(position);
-            // Gọi callback khi giỏ hàng thay đổi
+
             if (onCartChangeListener != null) {
                 onCartChangeListener.onCartChanged();
             }
@@ -82,7 +82,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 cartRepo.updateCartItemQuantity(cart.getProductId(), cart.getQuantity() - 1);
                 cart.setQuantity(cart.getQuantity() - 1);
                 notifyItemChanged(position);
-                // Gọi callback khi giỏ hàng thay đổi
+
                 if (onCartChangeListener != null) {
                     onCartChangeListener.onCartChanged();
                 }
@@ -91,7 +91,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 cartList.remove(position);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, cartList.size());
-                // Gọi callback khi giỏ hàng thay đổi
+
                 if (onCartChangeListener != null) {
                     onCartChangeListener.onCartChanged();
                 }
