@@ -39,7 +39,7 @@ public class OrderRepo {
     }
 
     public interface AddOrderCallback {
-        void onSuccess();
+        void onSuccess(Order order);
         void onFailure(Exception e);
     }
 
@@ -123,7 +123,14 @@ public class OrderRepo {
 
                 ordersCollection.add(orderData).addOnCompleteListener(orderTask -> {
                     if (orderTask.isSuccessful()) {
-                        callback.onSuccess();
+                        Order order = new Order();
+                        order.setOrderId(orderTask.getResult().getId());
+                        order.setUserId(userId);
+                        order.setTotalAmount(totalAmount);
+                        order.setTotalQuantity(totalQuantity.get().intValue());
+                        order.setStatus("Processing");
+                        order.setItems(items);
+                        callback.onSuccess(order);
                     } else {
                         callback.onFailure(orderTask.getException());
                     }
@@ -133,6 +140,7 @@ public class OrderRepo {
             }
         });
     }
+
 
     public void deleteOrder(String orderId, DeleteOrderCallback callback) {
         DocumentReference orderDoc = db.collection(ORDERS_COLLECTION).document(orderId);
