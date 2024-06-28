@@ -57,7 +57,7 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Product product = productList.get(holder.getAdapterPosition());
+        Product product = productList.get(position);
         holder.textProductName.setText(product.getName());
         holder.textProductPrice.setText(String.format("$ %.2f", product.getPrice()));
         Glide.with(context).load(product.getImage()).into(holder.imageView);
