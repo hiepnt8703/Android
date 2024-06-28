@@ -57,7 +57,7 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Product product = productList.get(position);
+        Product product = productList.get(holder.getAdapterPosition());
         holder.textProductName.setText(product.getName());
         holder.textProductPrice.setText(String.format("$ %.2f", product.getPrice()));
         Glide.with(context).load(product.getImage()).into(holder.imageView);
@@ -78,7 +78,6 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
                 EditText price = view.findViewById(R.id.edit_product_price);
 
                 Button btnUpdate = view.findViewById(R.id.button_edit_product);
-                Button btnDel = view.findViewById(R.id.btnDel);
 
                 name.setText(product.getName());
                 description.setText(product.getDescription());
@@ -129,51 +128,7 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
         holder.btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Are you sure?");
-                builder.setMessage("Delete cannot be undone!");
 
-                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Perform deletion from Firebase Realtime Database
-                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("products")
-                                .child(product.getId()); // Assuming "products" is your database reference
-
-                        databaseReference.removeValue()
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(context, "Product deleted successfully", Toast.LENGTH_SHORT).show();
-                                        // Remove item from the list and notify adapter
-                                        productList.remove(position);
-                                        notifyDataSetChanged();
-
-                                        // Load AdminFragment after deletion
-                                        FragmentManager fragmentManager = ((FragmentActivity) context).getSupportFragmentManager();
-                                        fragmentManager.beginTransaction()
-                                                .replace(R.id.nav_admin, new AdminFragment()) // Replace with your container ID
-                                                .commit();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(context, "Failed to delete product: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                });
-
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
             }
         });
     }
