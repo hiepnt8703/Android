@@ -130,7 +130,7 @@ public class CartFragment extends Fragment {
                 if (task.isSuccessful()) {
                     QuerySnapshot querySnapshot = task.getResult();
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        // Proceed to payment if collection "information" exists and is not empty
+
                         proceedToPayment();
                         Toast.makeText(getContext() , "Bạn đã thanh toán thành công vui lòng chờ quán xác nhận",Toast.LENGTH_SHORT).show();
                     } else {
@@ -156,7 +156,6 @@ public class CartFragment extends Fragment {
                     if (amountTask.isSuccessful()) {
                         double totalAmount = amountTask.getResult();
 
-                        // Extract sum from resultSum
                         String resultSumText = resultSum.getText().toString();
                        // double sum = Double.parseDouble(resultSumText.replace("Total: $", "").trim());
 

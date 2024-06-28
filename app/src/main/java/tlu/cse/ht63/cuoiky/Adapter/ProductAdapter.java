@@ -24,13 +24,13 @@ import tlu.cse.ht63.cuoiky.Repo.CartRepo;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
     private Context context;
     private List<Product> productList;
-    private List<Product> filteredList; // Danh sách sản phẩm được lọc
+    private List<Product> filteredList;
     private CartRepo cartRepo;
 
     public ProductAdapter(Context context, List<Product> productList) {
         this.context = context;
         this.productList = productList;
-        this.filteredList = new ArrayList<>(productList); // Khởi tạo filteredList từ productList ban đầu
+        this.filteredList = new ArrayList<>(productList);
         this.cartRepo = new CartRepo();
     }
 
@@ -43,17 +43,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-        Product product = filteredList.get(position); // Sử dụng filteredList thay vì productList
+        Product product = filteredList.get(position);
         holder.productName.setText(product.getName());
         holder.productPrice.setText(String.format("$ %.2f", product.getPrice()));
         holder.productRating.setText(String.valueOf(product.getRating()));
         Glide.with(context).load(product.getImage()).into(holder.productImage);
-        // Xử lý sự kiện khi người dùng click vào nút add_to_cart
+
         holder.add_to_cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Thêm sản phẩm vào giỏ hàng khi add_to_cart_button được click
-                cartRepo.addToCart(product.getId()); // Giả sử số lượng là 1 mặc định
+
+                cartRepo.addToCart(product.getId());
                 Toast.makeText(context, "Thêm vào giỏ hàng thành công",
                         Toast.LENGTH_SHORT).show();
             }
@@ -62,7 +62,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     @Override
     public int getItemCount() {
-        return filteredList.size(); // Sử dụng filteredList thay vì productList
+        return filteredList.size();
     }
 
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
@@ -82,7 +82,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         }
     }
 
-    // Phương thức để lọc danh sách sản phẩm dựa trên từ khóa
+
     public void filterList(List<Product> filteredList) {
         this.filteredList = filteredList;
         notifyDataSetChanged();

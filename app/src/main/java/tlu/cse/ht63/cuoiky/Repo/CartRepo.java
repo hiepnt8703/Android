@@ -74,7 +74,7 @@ public class CartRepo {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    // Product already exists, update quantity
+
                     Long currentQuantity = document.getLong("quantity");
                     if (currentQuantity != null) {
                         cartItemDocRef.update("quantity", currentQuantity + 1)
@@ -82,7 +82,7 @@ public class CartRepo {
                                 .addOnFailureListener(e -> Log.d("CartRepo", "Error updating quantity: ", e));
                     }
                 } else {
-                    // Product does not exist, add new cart item
+
                     cartItemDocRef.set(new Cart(productId, 1), SetOptions.merge())
                             .addOnSuccessListener(aVoid -> Log.d("CartRepo", "Cart item added."))
                             .addOnFailureListener(e -> Log.d("CartRepo", "Error adding cart item: ", e));

@@ -43,7 +43,7 @@ public class ProductRepo {
                 .addOnFailureListener(executor, e -> callback.onError(e));
     }
 
-    // Phương thức để tìm kiếm sản phẩm dựa trên từ khóa
+
     public void searchProducts(String keyword, ProductRepoCallback callback) {
         CollectionReference productsRef = db.collection(COLLECTION_NAME);
         Query query = productsRef.whereGreaterThanOrEqualTo("name", keyword.toLowerCase())
@@ -70,10 +70,10 @@ public class ProductRepo {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document != null && document.exists()) {
-                    // Check if the document is a QueryDocumentSnapshot before casting
+
                     if (document instanceof QueryDocumentSnapshot) {
                         QueryDocumentSnapshot queryDocumentSnapshot = (QueryDocumentSnapshot) document;
-                        // Handle QueryDocumentSnapshot appropriately if needed
+
                     }
 
                     Product product = document.toObject(Product.class);

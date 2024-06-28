@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment {
         productRepo = new ProductRepo();
         fetchProducts();
 
-        // Xử lý sự kiện khi người dùng nhập vào search bar
+
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -73,7 +73,6 @@ public class HomeFragment extends Fragment {
             public void onSuccess(List<Product> productList) {
                 products.clear();
                 products.addAll(productList);
-                // Khi mới load sản phẩm, hiển thị tất cả
                 showAllProducts();
             }
 
