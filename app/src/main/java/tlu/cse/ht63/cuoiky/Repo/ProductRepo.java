@@ -1,7 +1,9 @@
 package tlu.cse.ht63.cuoiky.Repo;
+
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ public class ProductRepo {
 
     public interface ProductRepoCallback {
         void onSuccess(List<Product> products);
+
         void onError(Exception e);
     }
 
@@ -30,7 +33,25 @@ public class ProductRepo {
         productsRef.get()
                 .addOnSuccessListener(executor, queryDocumentSnapshots -> {
                     List<Product> products = new ArrayList<>();
-                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Product product = Product.fromDocumentSnapshot(document);
+                        products.add(product);
+                    }
+                    callback.onSuccess(products);
+                })
+                .addOnFailureListener(executor, e -> callback.onError(e));
+    }
+
+    // Phương thức để tìm kiếm sản phẩm dựa trên từ khóa
+    public void searchProducts(String keyword, ProductRepoCallback callback) {
+        CollectionReference productsRef = db.collection(COLLECTION_NAME);
+        Query query = productsRef.whereGreaterThanOrEqualTo("name", keyword.toLowerCase())
+                .whereLessThan("name", keyword.toLowerCase() + "\uf8ff");
+
+        query.get()
+                .addOnSuccessListener(executor, queryDocumentSnapshots -> {
+                    List<Product> products = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Product product = Product.fromDocumentSnapshot(document);
                         products.add(product);
                     }
@@ -46,7 +67,7 @@ public class ProductRepo {
     public void getProductById(String productId, final ProductCallback callback) {
         db.collection("products").document(productId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
+                QueryDocumentSnapshot document = (QueryDocumentSnapshot) task.getResult();
                 if (document.exists()) {
                     Product product = document.toObject(Product.class);
                     callback.onProductLoaded(product);
@@ -58,8 +79,10 @@ public class ProductRepo {
             }
         });
     }
+
     public interface AddProductCallback {
         void onSuccess(String productId);
+
         void onError(Exception e);
     }
 
@@ -69,5 +92,4 @@ public class ProductRepo {
                 .addOnSuccessListener(documentReference -> callback.onSuccess(documentReference.getId()))
                 .addOnFailureListener(e -> callback.onError(e));
     }
-
 }

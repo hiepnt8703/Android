@@ -3,11 +3,14 @@ package tlu.cse.ht63.cuoiky;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,11 +26,13 @@ import tlu.cse.ht63.cuoiky.Model.Product;
 import tlu.cse.ht63.cuoiky.Repo.ProductRepo;
 
 public class HomeFragment extends Fragment {
+
     private EditText searchBar;
     private ImageView headerImage;
     private RecyclerView productList;
     private ProductAdapter productAdapter;
     private List<Product> products = new ArrayList<>();
+    private List<Product> filteredList; // Danh sách sản phẩm được lọc
     private ProductRepo productRepo;
 
     @Nullable
@@ -45,6 +50,20 @@ public class HomeFragment extends Fragment {
         productRepo = new ProductRepo();
         fetchProducts();
 
+        // Xử lý sự kiện khi người dùng nhập vào search bar
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterProducts(s.toString());
+            }
+        });
+
         return view;
     }
 
@@ -52,17 +71,53 @@ public class HomeFragment extends Fragment {
         productRepo.getAllProducts(new ProductRepo.ProductRepoCallback() {
             @Override
             public void onSuccess(List<Product> productList) {
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    products.clear();
-                    products.addAll(productList);
-                    productAdapter.notifyDataSetChanged();
-                });
+                products.clear();
+                products.addAll(productList);
+                // Khi mới load sản phẩm, hiển thị tất cả
+                showAllProducts();
             }
 
             @Override
             public void onError(Exception e) {
-                // Handle error fetching products
+                // Xử lý lỗi khi tải sản phẩm
+                Toast.makeText(requireContext(), "Failed to fetch products: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    // Phương thức lọc sản phẩm dựa trên từ khóa
+    private void filterProducts(String keyword) {
+        if (filteredList == null) {
+            filteredList = new ArrayList<>(products); // Khởi tạo filteredList ban đầu từ products
+        }
+
+        if (keyword.isEmpty()) {
+            // Nếu từ khóa trống, hiển thị tất cả sản phẩm
+            showAllProducts();
+        } else {
+            List<Product> tempFilteredList = new ArrayList<>();
+            for (Product product : products) {
+                if (product.getName().toLowerCase().contains(keyword.toLowerCase())) {
+                    tempFilteredList.add(product);
+                }
+            }
+            filteredList.clear();
+            filteredList.addAll(tempFilteredList);
+            productAdapter.filterList(filteredList);
+        }
+    }
+
+    // Phương thức để hiển thị tất cả sản phẩm
+    private void showAllProducts() {
+        if (filteredList != null) {
+            filteredList.clear();
+        }
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                productAdapter.filterList(products);
+            }
+        });
+    }
+
 }
