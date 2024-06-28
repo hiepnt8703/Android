@@ -1,6 +1,7 @@
 package tlu.cse.ht63.cuoiky.Repo;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -67,8 +68,14 @@ public class ProductRepo {
     public void getProductById(String productId, final ProductCallback callback) {
         db.collection("products").document(productId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                QueryDocumentSnapshot document = (QueryDocumentSnapshot) task.getResult();
-                if (document.exists()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null && document.exists()) {
+                    // Check if the document is a QueryDocumentSnapshot before casting
+                    if (document instanceof QueryDocumentSnapshot) {
+                        QueryDocumentSnapshot queryDocumentSnapshot = (QueryDocumentSnapshot) document;
+                        // Handle QueryDocumentSnapshot appropriately if needed
+                    }
+
                     Product product = document.toObject(Product.class);
                     callback.onProductLoaded(product);
                 } else {
@@ -79,6 +86,7 @@ public class ProductRepo {
             }
         });
     }
+
 
     public interface AddProductCallback {
         void onSuccess(String productId);
