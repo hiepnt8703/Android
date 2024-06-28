@@ -31,37 +31,22 @@
         app:layout_constraintTop_toBottomOf="@id/text_title" />
 
     <!-- EditText for Product Description -->
-    <EditText
-        android:id="@+id/edit_product_url"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/rounded"
-        android:hint="Nhập URL sản phẩm"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.842"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_image_product" />
 
     <EditText
         android:id="@+id/edit_product_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="56dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/rounded"
         android:hint="Nhập tên sản phẩm"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.842"
+        app:layout_constraintHorizontal_bias="0.157"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_product_url" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_image_product" />
 
     <EditText
         android:id="@+id/edit_product_description"

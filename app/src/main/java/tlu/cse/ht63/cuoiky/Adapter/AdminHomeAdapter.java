@@ -1,6 +1,8 @@
 package tlu.cse.ht63.cuoiky.Adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +24,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
@@ -26,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tlu.cse.ht63.cuoiky.AdminFragment;
+import tlu.cse.ht63.cuoiky.AdminHomeFragment;
 import tlu.cse.ht63.cuoiky.MainActivity;
 import tlu.cse.ht63.cuoiky.Model.Product;
 import tlu.cse.ht63.cuoiky.R;
@@ -68,7 +76,6 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
                 EditText name = view.findViewById(R.id.edit_product_name);
                 EditText description = view.findViewById(R.id.edit_product_description);
                 EditText price = view.findViewById(R.id.edit_product_price);
-                EditText imageUrl = view.findViewById(R.id.edit_product_url);
 
                 Button btnUpdate = view.findViewById(R.id.button_edit_product);
                 Button btnDel = view.findViewById(R.id.btnDel);
@@ -76,36 +83,35 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
                 name.setText(product.getName());
                 description.setText(product.getDescription());
                 price.setText(String.valueOf(product.getPrice()));
-                imageUrl.setText(product.getImage());
-
-                String url = imageUrl.getText().toString().trim();
                 Glide.with(imageView.getContext())
-                        .load(url)
+                        .load(product.getImage())
                         .into(imageView);
                 dialogPlus.show();
 
                 btnUpdate.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Map<String,Object> map = new HashMap<>();
-                        map.put("name",name.getText().toString());
-                        map.put("description",description.getText().toString());
-                        map.put("picture",imageUrl.getText().toString());
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("name", name.getText().toString());
+                        map.put("description", description.getText().toString());
                         map.put("price", Double.parseDouble(price.getText().toString()));
-                        DatabaseReference productRef = FirebaseDatabase.getInstance().getReference().child("products").child(product.getId());
-                        // Cập nhật dữ liệu lên Firebase
-                        productRef.updateChildren(map)
+
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        db.collection("products").document(product.getId())
+                                .update(map)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Toast.makeText(context, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-                                        // Đóng dialog (nếu có)
                                         if (dialogPlus != null && dialogPlus.isShowing()) {
                                             dialogPlus.dismiss();
                                         }
-                                        // Quay về màn hình chính (nếu cần)
-                                        Intent intent = new Intent(context, MainActivity.class);
-                                        context.startActivity(intent);
+                                        // Replace fragment
+                                        FragmentActivity activity = (FragmentActivity) context;
+                                        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragmentTransaction.replace(R.id.nav_admin, new AdminFragment()); // Assuming R.id.nav_host_fragment is your fragment container
+                                        fragmentTransaction.commit();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -117,6 +123,57 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
                     }
                 });
 
+            }
+        });
+
+        holder.btnDel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Are you sure?");
+                builder.setMessage("Delete cannot be undone!");
+
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Perform deletion from Firebase Realtime Database
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("products")
+                                .child(product.getId()); // Assuming "products" is your database reference
+
+                        databaseReference.removeValue()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(context, "Product deleted successfully", Toast.LENGTH_SHORT).show();
+                                        // Remove item from the list and notify adapter
+                                        productList.remove(position);
+                                        notifyDataSetChanged();
+
+                                        // Load AdminFragment after deletion
+                                        FragmentManager fragmentManager = ((FragmentActivity) context).getSupportFragmentManager();
+                                        fragmentManager.beginTransaction()
+                                                .replace(R.id.nav_admin, new AdminFragment()) // Replace with your container ID
+                                                .commit();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(context, "Failed to delete product: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
     }
