@@ -8,8 +8,8 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -39,6 +39,11 @@ public class OrderRepo {
     }
 
     public interface AddOrderCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public interface DeleteOrderCallback {
         void onSuccess();
         void onFailure(Exception e);
     }
@@ -76,7 +81,7 @@ public class OrderRepo {
     public void addOrder(List<Cart> cartItems, double totalAmount, final AddOrderCallback callback) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
-            Log.d("OrderRepo", "Người dùng chưa đăng nhập.");
+            Log.d("OrderRepo", "User is not logged in.");
             return;
         }
 
@@ -100,6 +105,7 @@ public class OrderRepo {
                     totalQuantity.updateAndGet(v -> v + cart.getQuantity());
                     item.put("price", product.getPrice());
                     item.put("image", product.getImage());
+                    item.put("rating", 0);
                     items.add(item);
                 }
                 taskCompletionSource.setResult(null);
@@ -122,6 +128,17 @@ public class OrderRepo {
                         callback.onFailure(orderTask.getException());
                     }
                 });
+            } else {
+                callback.onFailure(task.getException());
+            }
+        });
+    }
+
+    public void deleteOrder(String orderId, DeleteOrderCallback callback) {
+        DocumentReference orderDoc = db.collection(ORDERS_COLLECTION).document(orderId);
+        orderDoc.delete().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                callback.onSuccess();
             } else {
                 callback.onFailure(task.getException());
             }

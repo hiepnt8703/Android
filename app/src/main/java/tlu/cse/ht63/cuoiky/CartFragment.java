@@ -1,5 +1,6 @@
 package tlu.cse.ht63.cuoiky;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,6 +48,8 @@ public class CartFragment extends Fragment {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
+    private Context mContext;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,6 +59,7 @@ public class CartFragment extends Fragment {
         resultSum = view.findViewById(R.id.resultSum);
         payBtn = view.findViewById(R.id.payBtn);
 
+        mContext = getContext();
         cartList = new ArrayList<>();
         cartAdapter = new CartAdapter(getContext(), cartList);
         cartAdapter.setOnCartChangeListener(this::updateTotalSum);
@@ -124,6 +129,7 @@ public class CartFragment extends Fragment {
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
                         // Proceed to payment if collection "information" exists and is not empty
                         proceedToPayment();
+                        Toast.makeText(getContext() , "Bạn đã thanh toán thành công vui lòng chờ quán xác nhận",Toast.LENGTH_SHORT).show();
                     } else {
                         // Navigate to EditProfileFragment if collection "information" does not exist or is empty
                         getParentFragmentManager().beginTransaction()
