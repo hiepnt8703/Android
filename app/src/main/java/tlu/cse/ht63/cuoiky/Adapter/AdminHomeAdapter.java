@@ -78,7 +78,6 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
                 EditText price = view.findViewById(R.id.edit_product_price);
 
                 Button btnUpdate = view.findViewById(R.id.button_edit_product);
-
                 name.setText(product.getName());
                 description.setText(product.getDescription());
                 price.setText(String.valueOf(product.getPrice()));
