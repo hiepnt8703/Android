@@ -45,24 +45,19 @@ public class EditProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // Initialize views
         editTextName = view.findViewById(R.id.editTextName);
         editTextPhone = view.findViewById(R.id.editTextPhone);
         editTextAddress = view.findViewById(R.id.editTextAddress);
         btnSaveChanges = view.findViewById(R.id.btnSaveChanges);
         btnBack = view.findViewById(R.id.btnBack);
 
-        // Initialize Firebase Firestore
         db = FirebaseFirestore.getInstance();
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // Load user information
         loadUserInfo();
 
-        // Set click listener for btnSaveChanges
         btnSaveChanges.setOnClickListener(v -> {
-            // Get input data
+
             String name = editTextName.getText().toString().trim();
             String phone = editTextPhone.getText().toString().trim();
             String address = editTextAddress.getText().toString().trim();
@@ -90,13 +85,9 @@ public class EditProfileFragment extends Fragment {
     }
 
     private void loadUserInfo() {
-        // Reference to the user's document
         DocumentReference userDocRef = db.collection("users").document(userId);
-
-        // Reference to the "information" document inside the user's document
         DocumentReference infoDocRef = userDocRef.collection("information").document("profile");
 
-        // Get user information
         infoDocRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 Information userInfo = documentSnapshot.toObject(Information.class);
@@ -116,21 +107,18 @@ public class EditProfileFragment extends Fragment {
     private void saveOrUpdateUserInfo(String name, String phone, String address) {
         Information userInfo = new Information(name, phone, address);
 
-        // Reference to the user's document
         DocumentReference userDocRef = db.collection("users").document(userId);
 
-        // Reference to the "information" collection inside the user's document
+
         CollectionReference infoCollectionRef = userDocRef.collection("information");
 
-        // Save user information in the "information" collection
+
         infoCollectionRef.document("profile").set(userInfo)
                 .addOnSuccessListener(aVoid -> {
-                    // Handle success, e.g., show a success message and navigate back
                     Toast.makeText(getContext(), "Thông tin đã được cập nhật", Toast.LENGTH_SHORT).show();
                     getActivity().onBackPressed();
                 })
                 .addOnFailureListener(e -> {
-                    // Handle failure, e.g., show an error message
                     Toast.makeText(getContext(), "Cập nhật thông tin thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }

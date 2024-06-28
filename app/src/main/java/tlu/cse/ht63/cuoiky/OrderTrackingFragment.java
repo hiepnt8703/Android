@@ -47,14 +47,13 @@ public class OrderTrackingFragment extends Fragment {
             getParentFragmentManager().popBackStack();
         });
 
-        // Retrieve Order object from arguments
+
         if (getArguments() != null) {
             order = (Order) getArguments().getSerializable("order");
             if (order != null) {
-                // Load user information
+
                 loadInformation(order.getUserId());
 
-                // Setup RecyclerView with order items
                 setupRecyclerView(order.getItems());
                 updateUIBasedOnStatus(order.getStatus());
             }
@@ -68,7 +67,7 @@ public class OrderTrackingFragment extends Fragment {
         informationRepo.getUserInformation(new InformationRepo.InformationCallback() {
             @Override
             public void onSuccess(Information information) {
-                // Handle success, e.g., update UI with user information
+
                 textUserName.setText("Tên: " + information.getName());
                 textUserPhone.setText("Số điện thoại: " + information.getPhoneNumber());
                 textUserAddress.setText("Địa chỉ: " + information.getAddress());

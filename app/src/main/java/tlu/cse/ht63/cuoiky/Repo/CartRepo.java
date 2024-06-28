@@ -49,7 +49,7 @@ public class CartRepo {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (!document.exists()) {
-                    // User document does not exist, create it
+
                     Map<String, Object> userData = new HashMap<>();
                     userDocRef.set(userData).addOnCompleteListener(userCreateTask -> {
                         if (userCreateTask.isSuccessful()) {

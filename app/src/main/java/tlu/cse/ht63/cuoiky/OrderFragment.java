@@ -36,7 +36,6 @@ public class OrderFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Default fragment is ProcessingFragment
         if (savedInstanceState == null) {
             replaceFragment(new ProcessingFragment());
             textProcessing.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));

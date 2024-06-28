@@ -38,7 +38,7 @@ public class OrderTrackingAdapter extends RecyclerView.Adapter<OrderTrackingAdap
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Map<String, Object> item = items.get(position);
 
-        // Set product name and total price
+
         holder.textProductName.setText(String.valueOf(item.get("productName")));
 
         double price = ((Number) item.get("price")).doubleValue();

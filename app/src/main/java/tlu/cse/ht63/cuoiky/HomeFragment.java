@@ -84,14 +84,11 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // Phương thức lọc sản phẩm dựa trên từ khóa
     private void filterProducts(String keyword) {
         if (filteredList == null) {
-            filteredList = new ArrayList<>(products); // Khởi tạo filteredList ban đầu từ products
+            filteredList = new ArrayList<>(products);
         }
-
         if (keyword.isEmpty()) {
-            // Nếu từ khóa trống, hiển thị tất cả sản phẩm
             showAllProducts();
         } else {
             List<Product> tempFilteredList = new ArrayList<>();
