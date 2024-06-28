@@ -12,4 +12,9 @@
     <string name="final_cart_cost">21313p</string>
 
 
+    <string name="back_button">Back</string>
+    <string name="order_tracking">Order Tracking</string>
+    <string name="status_processing">Processing</string>
+    <string name="status_accept">Accept</string>
+    <string name="status_complete">Complete</string>
 </resources>

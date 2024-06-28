@@ -1,24 +1,31 @@
 package tlu.cse.ht63.cuoiky.Model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class Order {
+public class Order implements Serializable {
     private String orderId;
     private String userId;
     private double totalAmount;
     private int totalQuantity;
     private String status;
+    private List<Map<String, Object>> items;
 
-    private List<Map<String, Object>> items;  // Updated items field
+    // Default constructor (required for Firestore)
+    public Order() {}
 
-    // Constructors, getters, and setters
-    // You can generate these using your IDE or manually implement them
-
-    public Order() {
-        // Default constructor required for Firestore serialization
+    // Constructor with parameters
+    public Order(String orderId, String userId, double totalAmount, int totalQuantity, String status, List<Map<String, Object>> items) {
+        this.orderId = orderId;
+        this.userId = userId;
+        this.totalAmount = totalAmount;
+        this.totalQuantity = totalQuantity;
+        this.status = status;
+        this.items = items;
     }
 
+    // Getters and setters
     public String getOrderId() {
         return orderId;
     }

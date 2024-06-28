@@ -1,18 +1,23 @@
 package tlu.cse.ht63.cuoiky.Adapter;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import tlu.cse.ht63.cuoiky.Model.Order;
+import tlu.cse.ht63.cuoiky.OrderTrackingFragment;
 import tlu.cse.ht63.cuoiky.R;
 
 public class ProcessingAdapter extends RecyclerView.Adapter<ProcessingAdapter.OrderViewHolder> {
@@ -37,6 +42,17 @@ public class ProcessingAdapter extends RecyclerView.Adapter<ProcessingAdapter.Or
         holder.textId.setText(order.getOrderId());
         holder.textTotalQuantity.setText("Số lượng: " + order.getTotalQuantity());
         holder.textTotalPrice.setText("Tổng tiền: " + order.getTotalAmount());
+        holder.textTrackOrder.setOnClickListener(view -> {
+            FragmentManager fragmentManager = ((FragmentActivity) context).getSupportFragmentManager();
+            OrderTrackingFragment orderTrackingFragment = new OrderTrackingFragment();
+            Bundle args = new Bundle();
+            args.putSerializable("order", order); // Correct usage of putSerializable
+            orderTrackingFragment.setArguments(args);
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, orderTrackingFragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     @Override
