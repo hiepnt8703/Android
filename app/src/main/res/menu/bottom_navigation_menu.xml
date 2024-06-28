@@ -16,4 +16,9 @@
         android:id="@+id/nav_user"
         android:icon="@drawable/ic_user"
         android:title="User" />
+    <item
+        android:id="@+id/nav_admin"
+        android:icon="@drawable/ic_admin"
+        android:title="Admin"
+        android:visible="false" />
 </menu>
