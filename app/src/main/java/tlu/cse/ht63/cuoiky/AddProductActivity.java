@@ -115,7 +115,7 @@ public class AddProductActivity extends AppCompatActivity {
                                 productRepo.addProduct(product, new ProductRepo.AddProductCallback() {
                                     @Override
                                     public void onSuccess(String productId) {
-                                        Intent intent = new Intent(AddProductActivity.this, AdminHomeFragment.class);
+                                        Intent intent = new Intent(AddProductActivity.this, AdminFragment.class);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
                                         Toast.makeText(AddProductActivity.this, "Thêm sản phẩm thành công", Toast.LENGTH_SHORT).show();

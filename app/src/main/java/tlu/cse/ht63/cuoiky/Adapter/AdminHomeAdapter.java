@@ -156,7 +156,7 @@ public class AdminHomeAdapter extends RecyclerView.Adapter<AdminHomeAdapter.View
                                 FragmentActivity activity = (FragmentActivity) context;
                                 FragmentManager fragmentManager = activity.getSupportFragmentManager();
                                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                fragmentTransaction.replace(R.id.nav_admin, new AdminHomeFragment());
+                                fragmentTransaction.replace(R.id.nav_admin, new AdminFragment());
                                 fragmentTransaction.commit();
                             }
 
